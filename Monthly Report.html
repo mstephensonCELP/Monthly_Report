@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cummings Electrical — Market Intelligence Report</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #07142B; --surface: #0C1E3D; --border: #1C3B6B;
+    --text: #FFFFFF; --text-dim: #DCE8FF; --text-muted: #C4D6FF; --text-faint: #9FB9E8;
+    --heading: #FFFFFF; --green: #00E5A0; --yellow: #FFB800;
+    --blue: #7FB6FF; --orange: #FF9A72; --red: #FF7B7B;
+  }
+  body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; line-height: 1.5; }
+  .header { border-bottom: 1px solid var(--border); padding: 24px 32px 20px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .header-eyebrow { font-size: 10px; letter-spacing: 3px; color: var(--blue); margin-bottom: 6px; text-transform: uppercase; }
+  .header-title { font-family: Arial, sans-serif; font-size: 24px; font-weight: 800; color: var(--heading); letter-spacing: -0.5px; text-transform: uppercase; }
+  .header-meta { font-size: 11px; color: var(--text-muted); text-align: right; }
+  .container { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 10px; letter-spacing: 3px; color: var(--blue); text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .section { margin-bottom: 36px; }
+  .indicators-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  .indicator-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .indicator-label { font-size: 10px; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+  .indicator-value { font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; color: var(--heading); margin-bottom: 5px; }
+  .indicator-note { font-size: 10.5px; color: var(--text-dim); line-height: 1.5; }
+  .alert { background: #1A0E08; border: 1px solid rgba(255,112,67,0.35); border-left: 4px solid var(--orange); border-radius: 8px; padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; }
+  .alert-icon { font-size: 20px; margin-top: 1px; flex-shrink: 0; }
+  .alert-eyebrow { font-size: 10px; letter-spacing: 2px; color: var(--orange); margin-bottom: 6px; text-transform: uppercase; }
+  .alert-body { font-size: 13px; color: #C8A898; line-height: 1.6; }
+  .alert-body strong { color: var(--heading); }
+  .alert-body .hi { color: var(--orange); font-weight: 700; }
+  .sector-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sector-tab { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px; cursor: pointer; color: var(--text-muted); font-size: 12px; font-family: Arial, sans-serif; letter-spacing: 0.5px; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+  .sector-tab:hover { border-color: #2E3A50; color: var(--text); }
+  .sector-panel { border-radius: 10px; padding: 24px; display: none; }
+  .sector-panel.active { display: block; }
+  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sector-name { font-family: Arial, sans-serif; font-size: 20px; font-weight: 700; color: var(--heading); margin-bottom: 8px; text-transform: uppercase; }
+  .sector-badge { font-size: 10px; letter-spacing: 2px; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-left: 10px; vertical-align: middle; }
+  .sector-priority { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+  .sector-spend { text-align: right; }
+  .sector-spend-value { font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+  .sector-spend-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .sector-bullets { display: flex; flex-direction: column; gap: 10px; }
+  .sector-bullet { display: flex; gap: 12px; align-items: flex-start; }
+  .bullet-icon { margin-top: 1px; font-size: 14px; flex-shrink: 0; }
+  .bullet-text { font-size: 13px; line-height: 1.6; color: #B0B8C4; }
+  .bullet-text.watch { color: #C8A898; }
+  .watch-label { color: var(--orange); font-weight: 700; }
+  .bar-chart { display: flex; flex-direction: column; gap: 14px; }
+  .bar-meta { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; color: var(--text-dim); }
+  .bar-track { background: #1A2030; border-radius: 3px; height: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; opacity: 0.85; }
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; overflow-x: auto; }
+  .chart-note { font-size: 10px; color: var(--text-muted); margin-top: 8px; }
+  .outlook-list { display: flex; flex-direction: column; gap: 12px; }
+  .outlook-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; display: flex; gap: 16px; align-items: flex-start; }
+  .outlook-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+  .outlook-title { font-size: 13px; font-weight: 500; color: var(--heading); margin-bottom: 5px; text-transform: uppercase; }
+  .outlook-body { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .footer { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; font-size: 10px; color: var(--text-faint); line-height: 1.8; }
+  .number-strong { font-weight: 700; color: inherit; }
+  @media (max-width: 600px) { .header, .container { padding: 16px; } .header-title { font-size: 18px; } .sector-spend-value { font-size: 22px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-eyebrow">Cummings Electrical</div>
+    <div class="header-title">Market Intelligence Report</div>
+  </div>
+  <div class="header-meta">
+    <div id="reportDate"></div>
+    <div>YTD 2026 — Through Feb 24</div>
+    <div style="margin-top:3px">Prepared for Executive Team</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-label">Economic &amp; Leading Indicators</div>
+    <div class="indicators-grid" id="indicators"></div>
+  </div>
+
+  <div class="section">
+    <div class="alert">
+      <div class="alert-icon">⚠️</div>
+      <div>
+        <div class="alert-eyebrow">Material Cost Alert — Action Required</div>
+        <div class="alert-body">
+          Copper wire &amp; cable up <span class="hi">+22% YoY</span> with a 50% tariff locked in since Aug 2025 — and rising further in 2026.
+          Steel +17%, Aluminum +30.5%.
+          <strong> Escalation clauses and short bid-validity windows are required on all projects.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Primary Sector Analysis</div>
+    <div class="sector-tabs" id="sectorTabs"></div>
+    <div id="sectorPanels"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Relative Sector Momentum — Next 18 Months</div>
+    <div class="bar-chart" id="barChart"></div>
+    <div style="font-size:10px;color:var(--text-faint);margin-top:8px">Relative score based on planning pipeline, capital flows, and backlog data — not a forecast of dollar volume.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">ABI Trend — Jan 2025 to Jan 2026 (Below 50 = Contraction)</div>
+    <div class="chart-wrap">
+      <svg id="abiChart" viewBox="0 0 600 130" style="width:100%;min-width:340px;display:block"></svg>
+      <div class="chart-note">ABI below 50 for 35 of last 38 months. General commercial pipeline remains soft — Cummings' primary sectors are insulated by direct corporate and institutional capital.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Outlook — 5 Things Cummings Should Do Now</div>
+    <div class="outlook-list" id="outlook"></div>
+  </div>
+
+  <div class="footer">
+    Sources: AIA/Deltek ABI (Feb 18, 2026) · ABC Backlog (Feb 17, 2026) · Dodge Construction Network (Jan 8, 2026) · AGC PPI Analysis (Jan 30, 2026) ·
+    US Census Bureau (Jan 21, 2026) · Federal Reserve FOMC (Jan 29, 2026) · Morningstar DBRS (Oct 27, 2025) · JLL 2026 Data Center Outlook ·
+    Core Scientific press release (Feb 26, 2025) · Deloitte Power &amp; Utilities Outlook (Dec 2025) · BloombergNEF Grid Investment Outlook (Dec 2025)
+  </div>
+
+</div>
+
+<script>
+const indicators = [
+  { label: "Fed Funds Rate", value: "3.50–3.75%", note: "Held Jan 29, 2026. 1–2 cuts expected this year.", trend: "neutral" },
+  { label: "10-Yr Treasury", value: "4.08%", note: "As of Feb 20, 2026. Down from 4.24% in late Jan.", trend: "improving" },
+  { label: "ABI (Jan 2026)", value: "43.8", note: "Below 50 = contraction. 35 of last 38 months sub-50.", trend: "negative" },
+  { label: "Dodge DMI (Dec 2025)", value: "+37% YoY", note: "Planning pipeline up 37% in 2025. Leads starts by 12–18 months.", trend: "positive" },
+  { label: "ABC Backlog (Jan 2026)", value: "8.0 mo", note: "4-year low. Large contractors ($50M+) holding up; smaller firms hurting.", trend: "negative" },
+  { label: "Copper Wire (YoY)", value: "+22%", note: "50% tariff on semi-finished copper since Aug 2025. Rising further.", trend: "negative" },
+  { label: "Steel Mill Products", value: "+17%", note: "50% tariff. Steepest annual rise since 2022.", trend: "negative" },
+  { label: "Aluminum Mill Shapes", value: "+30.5%", note: "Largest YoY increase since pandemic supply chain crisis.", trend: "negative" },
+];
+const trendBorder = { positive:"#00E5A0", negative:"#FF5252", improving:"#FFB800", neutral:"#556070" };
+
+const sectors = [
+  { name:"Data Centers", status:"ACCELERATING", color:"#00E5A0", signal:"▲", priority:"HIGHEST", spend:"$425B", spendLabel:"US spend in 2025",
+    bullets:[
+      {text:"CoreWeave 2026 capex expected to double 2025 levels (~$24–28B)", watch:false},
+      {text:"Core Scientific: 590 MW contracted across 6 sites with CoreWeave — active construction", watch:false},
+      {text:"Hyperscaler spend nearly tripled YoY in Q3 2025; $3T global investment supercycle through 2030", watch:false},
+      {text:"Data center construction costs up ~50% per MW YoY — owners accepting facilities on delivery", watch:false},
+      {text:"Watch: Project delays at 3rd-party developers pushing starts toward late 2027 — confirm schedules with GC partners directly", watch:true},
+    ]},
+  { name:"Power / Energy", status:"ACCELERATING", color:"#FFB800", signal:"▲", priority:"HIGH", spend:"$1.4T", spendLabel:"Utility capex 2025–2030",
+    bullets:[
+      {text:"Utilities entering a 5-year investment 'super-cycle' — spending double the prior 10 years combined", watch:false},
+      {text:"957 GW of new generation planned 2026–2030; natural gas making a major comeback (+40 GW vs prior plan)", watch:false},
+      {text:"Global grid spend topped $470B in 2025, up 16% YoY — driven by data center load connections", watch:false},
+      {text:"Direct adjacency play: same hyperscaler clients Cummings wires are driving this grid demand", watch:false},
+      {text:"Watch: IRA subsidy rollback slowing some renewable projects; gas and battery storage projects less affected", watch:true},
+    ]},
+  { name:"Healthcare", status:"STEADY GROWTH", color:"#4DA6FF", signal:"→", priority:"MEDIUM-HIGH", spend:"$28.4B", spendLabel:"Hospital starts forecast 2026",
+    bullets:[
+      {text:"Hospital construction ~$34.6B revenue in 2025; starts growing to $30.4B in 2027", watch:false},
+      {text:"Renovation and infrastructure upgrades dominate the pipeline — directly aligned with electrical sub work", watch:false},
+      {text:"61% of health systems increasing infrastructure upgrade budgets; 59% increasing renovation spend", watch:false},
+      {text:"Prefab/modular accelerating — projects with pre-designed MEP racking reward early sub involvement", watch:false},
+      {text:"Watch: Medicaid cuts under OBBBA add risk for smaller and rural facilities. Focus on large health systems.", watch:true},
+    ]},
+  { name:"Manufacturing", status:"COOLING", color:"#FF7043", signal:"▼", priority:"SELECTIVE", spend:"$214B", spendLabel:"Annualized rate (Oct 2025)",
+    bullets:[
+      {text:"Post-CHIPS/IRA surge is fading — driven by a handful of mega-projects, not broad expansion", watch:false},
+      {text:"IIJA expired Sept 30, 2025 — federal program uncertainty weakens publicly-supported project pipelines", watch:false},
+      {text:"Project timelines 20–25% longer than normal; actual starts may not arrive until late 2027", watch:false},
+      {text:"Semiconductor, defense manufacturing, and EV-adjacent industrial remain active", watch:false},
+      {text:"Watch: Focus only on projects backed by private capital or contracted revenue — avoid federally dependent work", watch:true},
+    ]},
+];
+const statusStyles = {
+  "ACCELERATING":  {bg:"rgba(0,229,160,0.08)",  border:"rgba(0,229,160,0.4)",  text:"#00E5A0"},
+  "STEADY GROWTH": {bg:"rgba(77,166,255,0.08)",  border:"rgba(77,166,255,0.4)",  text:"#4DA6FF"},
+  "COOLING":       {bg:"rgba(255,112,67,0.08)",  border:"rgba(255,112,67,0.4)",  text:"#FF7043"},
+};
+const bars = [
+  {name:"Data Centers", pct:95, color:"#00E5A0"},
+  {name:"Power / Energy Infrastructure", pct:88, color:"#FFB800"},
+  {name:"Healthcare", pct:65, color:"#4DA6FF"},
+  {name:"Manufacturing / Industrial", pct:40, color:"#FF7043"},
+  {name:"Warehouse / Logistics", pct:28, color:"#556070"},
+  {name:"Office", pct:12, color:"#334050"},
+];
+const outlook = [
+  {icon:"⚡", title:"Stay close to Core Scientific & CoreWeave schedules", body:"Announced timelines routinely slip 1–2 years due to supply chain pressure and permitting delays. Confirm actual start dates with GC/CM partners directly — don't plan capacity around press releases."},
+  {icon:"🔌", title:"Build a power infrastructure channel", body:"The utility super-cycle is the downstream consequence of your data center clients. Target substation, switchgear, and grid projects adjacent to hyperscaler campuses. Start building utility and EPC relationships now."},
+  {icon:"🏥", title:"Pursue hospital renovation, not rural outpatient", body:"Focus on health systems with strong balance sheets and diversified revenue. Medicaid cuts under the One Big Beautiful Bill create real risk at smaller and rural facilities."},
+  {icon:"📋", title:"Protect margin — escalation clauses are non-negotiable", body:"Copper wire +22% YoY with a 50% tariff locked in and rising. No fixed-price bids without material escalation provisions and bid-validity windows of 30–45 days maximum."},
+  {icon:"👷", title:"Start recruiting now for the 2027 pipeline", body:"The industry needs 349,000 net new workers in 2026. Data center builds compress timelines aggressively — electrical labor will be scarce when the 2025 planning surge converts to starts in late 2026 and 2027."},
+];
+const abiPoints = [
+  {m:"Jan '25",v:45.6},{m:"Feb",v:45.5},{m:"Mar",v:46.2},{m:"Apr",v:44.8},
+  {m:"May",v:45.1},{m:"Jun",v:46.0},{m:"Jul",v:46.8},{m:"Aug",v:47.3},
+  {m:"Sep",v:47.1},{m:"Oct",v:46.5},{m:"Nov",v:45.3},{m:"Dec",v:48.5},{m:"Jan '26",v:43.8},
+];
+
+// Render indicators
+const indEl = document.getElementById("indicators");
+indicators.forEach(ind => {
+  const card = document.createElement("div");
+  card.className = "indicator-card";
+  card.style.borderLeft = "3px solid " + trendBorder[ind.trend];
+  card.innerHTML = `<div class="indicator-label">${ind.label}</div><div class="indicator-value">${ind.value}</div><div class="indicator-note">${ind.note}</div>`;
+  indEl.appendChild(card);
+});
+
+// Render sectors
+const tabsEl = document.getElementById("sectorTabs");
+const panelsEl = document.getElementById("sectorPanels");
+sectors.forEach((s, i) => {
+  const ss = statusStyles[s.status] || {};
+  const tab = document.createElement("button");
+  tab.className = "sector-tab";
+  tab.dataset.idx = i;
+  tab.innerHTML = `<span style="color:${s.color}">${s.signal}</span> ${s.name}`;
+  if (i === 0) { tab.style.cssText = `background:${ss.bg};border-color:${ss.border};color:${ss.text};font-weight:700`; }
+  tabsEl.appendChild(tab);
+
+  const panel = document.createElement("div");
+  panel.className = "sector-panel" + (i === 0 ? " active" : "");
+  panel.dataset.idx = i;
+  panel.style.cssText = `background:${ss.bg};border:1px solid ${ss.border}`;
+  panel.innerHTML = `
+    <div class="sector-header">
+      <div>
+        <div class="sector-name">${s.name}<span class="sector-badge" style="background:${ss.bg};border:1px solid ${ss.border};color:${ss.text}">${s.status}</span></div>
+        <div class="sector-priority">CUMMINGS PRIORITY: <span style="color:${s.color}">${s.priority}</span></div>
+      </div>
+      <div class="sector-spend">
+        <div class="sector-spend-value" style="color:${s.color}">${s.spend}</div>
+        <div class="sector-spend-label">${s.spendLabel}</div>
+      </div>
+    </div>
+    <div class="sector-bullets">
+      ${s.bullets.map(b => `<div class="sector-bullet"><span class="bullet-icon" style="color:${b.watch?'#FF7043':s.color}">${b.watch?'◆':'›'}</span><span class="bullet-text${b.watch?' watch':''}">${b.watch?`<span class="watch-label">Watch:</span>${b.text.replace(/^Watch:/,'')}`:`${b.text}`}</span></div>`).join('')}
+    </div>`;
+  panelsEl.appendChild(panel);
+});
+
+tabsEl.addEventListener("click", e => {
+  const tab = e.target.closest(".sector-tab");
+  if (!tab) return;
+  const idx = parseInt(tab.dataset.idx);
+  const ss = statusStyles[sectors[idx].status] || {};
+  document.querySelectorAll(".sector-tab").forEach((t,ti) => {
+    t.style.cssText = "background:var(--surface);border-color:var(--border);color:var(--text-muted);font-weight:400";
+  });
+  tab.style.cssText = `background:${ss.bg};border-color:${ss.border};color:${ss.text};font-weight:700`;
+  document.querySelectorAll(".sector-panel").forEach(p => p.classList.remove("active"));
+  document.querySelector(`.sector-panel[data-idx="${idx}"]`).classList.add("active");
+});
+
+// Render bars
+const barEl = document.getElementById("barChart");
+bars.forEach(b => {
+  const row = document.createElement("div");
+  row.className = "bar-row";
+  row.innerHTML = `<div class="bar-meta"><span>${b.name}</span><span style="color:${b.color}">${b.pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${b.pct}%;background:${b.color}"></div></div>`;
+  barEl.appendChild(row);
+});
+
+// Render ABI chart
+(function(){
+  const W=600,H=130,PAD=32,minV=40,maxV=52;
+  const xs = abiPoints.map((_,i) => PAD + (i/(abiPoints.length-1))*(W-PAD*2));
+  const ys = abiPoints.map(p => H-PAD-((p.v-minV)/(maxV-minV))*(H-PAD*2));
+  const y50 = H-PAD-((50-minV)/(maxV-minV))*(H-PAD*2);
+  const pathD = abiPoints.map((_,i) => `${i===0?'M':'L'} ${xs[i].toFixed(1)} ${ys[i].toFixed(1)}`).join(' ');
+  const areaD = `${pathD} L ${xs[xs.length-1].toFixed(1)} ${H-PAD} L ${xs[0].toFixed(1)} ${H-PAD} Z`;
+  document.getElementById("abiChart").innerHTML = `
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4DA6FF" stop-opacity="0.15"/><stop offset="100%" stop-color="#4DA6FF" stop-opacity="0.01"/></linearGradient></defs>
+    <line x1="${PAD}" y1="${y50.toFixed(1)}" x2="${W-PAD}" y2="${y50.toFixed(1)}" stroke="rgba(255,82,82,0.35)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="${W-PAD+5}" y="${(y50+4).toFixed(1)}" fill="#FF5252" font-size="9" font-family="Arial, sans-serif">50</text>
+    <path d="${areaD}" fill="url(#ag)"/>
+    <path d="${pathD}" fill="none" stroke="#4DA6FF" stroke-width="2.2" stroke-linejoin="round"/>
+    ${abiPoints.map((p,i) => `
+      <circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="4" fill="${p.v>=50?'#00E5A0':'#4DA6FF'}"/>
+      ${(i===0||i===abiPoints.length-1||i===11)?`<text x="${xs[i].toFixed(1)}" y="${(ys[i]-9).toFixed(1)}" text-anchor="middle" fill="#8892A0" font-size="9" font-family="Arial, sans-serif">${p.v}</text>`:''}
+      ${(i%2===0||i===abiPoints.length-1)?`<text x="${xs[i].toFixed(1)}" y="${H-5}" text-anchor="middle" fill="#556070" font-size="8.5" font-family="Arial, sans-serif">${p.m}</text>`:''}
+    `).join('')}`;
+})();
+
+// Render outlook
+const outEl = document.getElementById("outlook");
+outlook.forEach(item => {
+  const div = document.createElement("div");
+  div.className = "outlook-item";
+  div.innerHTML = `<div class="outlook-icon">${item.icon}</div><div><div class="outlook-title">${item.title}</div><div class="outlook-body">${item.body}</div></div>`;
+  outEl.appendChild(div);
+});
+
+// Render header timestamp with today's date
+const reportDateEl = document.getElementById("reportDate");
+if (reportDateEl) {
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  reportDateEl.textContent = `As of ${formattedDate}`;
+}
+
+// Bold all numeric values in visible text content.
+function boldAllNumbers(root) {
+  const numberPattern = /[+\-]?\$?\d[\d,]*(?:\.\d+)?(?:[–-]\d[\d,]*(?:\.\d+)?)?%?/g;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const parent = node.parentElement;
+    if (!parent) continue;
+    if (parent.closest("script, style, .number-strong")) continue;
+    if (!/\d/.test(node.nodeValue || "")) continue;
+    textNodes.push(node);
+  }
+
+  textNodes.forEach(node => {
+    const text = node.nodeValue || "";
+    numberPattern.lastIndex = 0;
+
+    let hasMatch = false;
+    let lastIndex = 0;
+    let match;
+    const frag = document.createDocumentFragment();
+
+    while ((match = numberPattern.exec(text)) !== null) {
+      hasMatch = true;
+      const start = match.index;
+      const end = start + match[0].length;
+
+      if (start > lastIndex) {
+        frag.appendChild(document.createTextNode(text.slice(lastIndex, start)));
+      }
+
+      const strong = document.createElement("span");
+      strong.className = "number-strong";
+      strong.textContent = match[0];
+      frag.appendChild(strong);
+
+      lastIndex = end;
+    }
+
+    if (!hasMatch) return;
+    if (lastIndex < text.length) {
+      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+
+boldAllNumbers(document.body);
+</script>
+</body>
+</html>
